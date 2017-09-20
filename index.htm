@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Prototype 0</title>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script src="https://npmcdn.com/vue/dist/vue.js"></script>
 <script type="text/javascript" src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
 <script type="text/javascript" src="http://cdn.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
@@ -13,13 +14,24 @@ h1, code {
 }
 
 #canvas {
+    position: relative;
     width: 545px;
     height: 545px;
     background-color: rgb(69, 86, 255);
     border: 22.5px solid white;
 }
 
+#canvas canvas{
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 500px;
+    height: 500px;
+}
+
 #turtle {
+    position: absolute;
     margin-left: -22.5px;
     margin-top: -22.5px;
     width: 45px;
@@ -35,7 +47,7 @@ h1, code {
             <p>CRH380B-6216L &lt;muner_szr6216@outlook.com&gt;</p>
             <hr>
             <div v-if="state != 'success'">
-                <p><strong>It seems that you haven't connected to the ROS host running <i>turtlesim</i>.</strong><br>Try to do the following step:</p>
+                <p><strong>It seems that you haven't connected to the ROS host running <i>turtlesim</i>.</strong><br>Try to do the following steps:</p>
                 <ol>
                     <li>Run <code>roscore</code> in the terminal of host</li>
                     <li>Start <i>turtlesim</i> by entering the following command in a <i>new terminal</i>:<br><code>rosrun turtlesim turtlesim_node</code></li>
@@ -52,6 +64,7 @@ h1, code {
                     <label>Where am I</label>
                     <p><small>XYZVP: {{pose.x}}, {{pose.y}}, {{pose.theta}}, {{pose.linear_velocity}}, {{pose.angular_velocity}}</small></p>
                     <div id="canvas">
+                        <canvas id="drawing" width="500px" height="500px"></canvas>
                         <div id="turtle">
                             <img id="turtleImage" src="./img/groovy.png"></img>
                         </div>
@@ -95,10 +108,42 @@ h1, code {
                 <div class="form-group">
                     <button class="btn btn-primary" @click="setColor">Set background color</button>
                 </div>
+                <div class="form-group" v-if="!penOff">
+                    <label>Set pen color</label>
+                    <div class="form-inline">
+                        <div class="input-group" style="width:24%">
+                            <span class="input-group-addon">Red</span>
+                            <input type="text" class="form-control" v-model="pen.Red">
+                        </div>
+                        <div class="input-group" style="width:24%">
+                            <span class="input-group-addon">Green</span>
+                            <input type="text" class="form-control" v-model="pen.Green">
+                        </div>
+                        <div class="input-group" style="width:24%">
+                            <span class="input-group-addon">Blue</span>
+                            <input type="text" class="form-control" v-model="pen.Blue">
+                        </div>
+                        <div class="input-group" style="width:24%">
+                            <span class="input-group-addon">Width</span>
+                            <input type="text" class="form-control" v-model="pen.Width">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" @click="setPen" v-if="!penOff">Set pen color</button>
+                    <button class="btn btn-info" @click="penOnOff" v-if="!penOff">Turn pen off</button>
+                    <button class="btn btn-info" @click="penOnOff" v-if="penOff">Turn pen on</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 </body>
+<script>
+function updateColor() {
+    console.log('load canvas');
+    document.getElementById('canvas').style.backgroundColor = 'rgb(' + app.backgroundR + ', ' + app.backgroundG + ', ' + app.backgroundB + ')';
+}
+</script>
 <script src="app.js"></script>
 </html>
